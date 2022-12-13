@@ -5,8 +5,6 @@ from typing import List
 from airflow.decorators import dag, task
 
 
-
-
 @dag(
     schedule=None,
     start_date=pendulum.datetime(2022, 12, 12, tz="UTC"),
