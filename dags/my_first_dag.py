@@ -1,6 +1,9 @@
+import json
+
 import pendulum
 import requests
 from typing import List
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from airflow.decorators import dag, task
 
@@ -27,6 +30,9 @@ def my_very_own_etl():
         for url in data:
             r = requests.get(url)
             r.raise_for_status()
+            hook = S3Hook(aws_conn_id="S3_ETL_CONN")
+            extra = hook.get_connection(hook.aws_conn_id).get_extra()
+            hook.load_bytes(r.content, key=url.split('/')[-1], bucket_name=json.loads(extra)['bucket_name'])
 
     extracted_data = extract()
     transformed_data = transform(extracted_data)
